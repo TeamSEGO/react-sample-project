@@ -30,14 +30,9 @@ var SegoForm = React.createClass({
   }
 });
 var SegoDiv = React.createClass({
-  getInitialState: function() {
-      return {
-          filterText: '',
-          inStockOnly: false
-      };
-  },
   formChanged : function(members){
     console.log(members);
+    this.setState({});
   },
   render : function() {
     var members=[];
