@@ -10,7 +10,8 @@ var SegoForm = React.createClass({
       console.log("fill the blank");
       return;
     }
-    this.props.memebers.push({name:name,inChargeOf :inChargeOf, generation:generation});
+    console.log(this.props.members);
+    this.props.members.push({name:name,inChargeOf :inChargeOf, generation:generation});
     this.props.onFormChange(this.props.memebers);
     this.refs.name.getDOMNode().value = '';
     this.refs.inChargeOf.getDOMNode().value = '';
@@ -23,36 +24,75 @@ var SegoForm = React.createClass({
           <input type="text" placeholder="이름" ref="name" />
           <input type="text" placeholder="담당" ref="inChargeOf" />
           <input type="text" placeholder="세대" ref="generation" />
-          <input type="submit" value="Post" />
+          <input type="submit" value="Insert" />
+        </form>
+      </div>
+    );
+  }
+});
+var SegoSearch = React.createClass({
+  handleChange: function(e) {
+    this.props.onSearch( this.refs.name.getDOMNode().value );
+  },
+  render : function(){
+    return(
+      <div>
+        <form>
+          이름으로 찾기 : <input
+          type="text"
+          placeholder="이름"
+          onChange = {this.handleChange}
+          value={this.props.name}
+          ref="name" />
         </form>
       </div>
     );
   }
 });
 var SegoDiv = React.createClass({
-  formChanged : function(members){
-    console.log(members);
+  getInitialState: function() {
+    return {
+        member : this.props.members,
+        nameFilter: ''
+    };
+  },
+  formChanged : function(){
     this.setState({});
+  },
+  onSearch: function( name ){
+    if(!name) name="";
+    this.setState({
+      nameFilter: name
+    });
   },
   render : function() {
     var members=[];
-    this.props.member.forEach(function( member ){
-      members.push( <div>
-                    이름 : {member.name}
-                    , 담당 : {member.inChargeOf}
-                    , 세대 : {member.generation}
-                    </div>
-                  );
-    }.bind(this));
+    if(this.state.member && this.state.member.length > 0){
+      this.state.member.forEach(function( member ){
+        if ( member.name.indexOf(this.state.nameFilter) === -1 ) {
+            return;
+        }
+        members.push( <div>
+                      이름 : {member.name}
+                      , 담당 : {member.inChargeOf}
+                      , 세대 : {member.generation}
+                      </div>
+                    );
+      }.bind(this));
+    }
     return (
       <div>
-        <SegoForm onFormChange={this.formChanged} memebers = {this.props.member}/>
+        <SegoForm
+        onFormChange={this.formChanged}
+        members={this.props.members}
+        />
         <div>
           {members}
         </div>
+        <SegoSearch onSearch={this.onSearch}/>
       </div>
     );
   }
 });
-React.render(<SegoDiv member={segoMember}/>, document.body);
+React.render(<SegoDiv members={segoMember}/>, document.body);
 // <SegoRow member={this.props.member}/>
